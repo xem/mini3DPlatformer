@@ -1,0 +1,6 @@
+/* 3D scene */
+#viewport{width:700px;height:600px;overflow:hidden;border:1px solid;position:relative;perspective:500px}
+#viewport *{transform-style:preserve-3d;box-sizing:border-box}
+#camera{width:0;height:0;position:absolute;top:50%;left:50%}
+#scene{position:fixed;transform:translate3D(-50%,-50%,-2000px)rotateX(65deg)rotateZ(-35deg)}
+#floor{position:fixed;background:#4B4}
