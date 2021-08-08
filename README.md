@@ -7,4 +7,4 @@ Demo 2: https://xem.github.io/mini3Dplatformer/2 (hero rotates on itself and mov
 
 Demo 3: (SOON)
 
-xem - 2021
+xem, 2021
