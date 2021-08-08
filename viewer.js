@@ -18,7 +18,7 @@ moveScene = (rx, rz) => {
 
 // Return HTML code for a cube, at the given coordinates
 drawCube = (x, y, z, id='') => {
-  html = `<div id='${id}' class='cube' style='transform:translate3d(${x*200}px,${y*200}px,${z*200}px)'>`;
+  html = `<div id='${id}' class='cube' style='transform:${id == 'hero' ? ('scaleX(' + hero_w + ')scaleY(' + hero_h + ')') : ''}translate3d(${x*200}px,${y*200}px,${z*200}px)'>`;
   html += `<div class="face up"></div>`;
   html += `<div class="face left"></div>`;
   html += `<div class="face back"></div>`;

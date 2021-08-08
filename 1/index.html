@@ -1,6 +1,6 @@
-<h3>Mini 3D Platformer demo</h3>
-<link rel=stylesheet href=viewer.css>
-<link rel=stylesheet href=pieces.css>
+<h3>Mini 3D Platformer demo 1</h3>
+<link rel=stylesheet href="../viewer.css">
+<link rel=stylesheet href="../pieces.css">
 
 <p>Move with arrow keys or WASD or ZQSD, jump with Space
 <p><a href="https://github.com/xem/mini3DPlatformer/blob/gh-pages/index.html">Source code</a>
@@ -23,73 +23,8 @@
 <p>rx <input type=range min=0 max=90 value=45 id=RX> 
 rz <input type=range min=-90 max=90 value=0 id=RZ>
 
-<script>
-// Map (made with https://xem.github.io/3Dmapeditor/)
-map = {
-  w: 10,
-  h: 10,
-  layers: [
-
-  // Layer 0:
-    [
-      '0000111111',
-      '0000011111',
-      '0000001111',
-      '0000000111',
-      '0000000011',
-      '0000000001',
-      '0000000000',
-      '0000000000',
-      '1000000000',
-      '1100000000',
-    ],
-    
-    // Layer 1:
-    [
-      '1000000111',
-      '1000000011',
-      '1000000001',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-    ],
-
-    // Layer 2:
-    [
-      '0000000001',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000111',
-    ],
-
-    // Layer 3:
-    [
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000000000',
-      '0000011100',
-    ]
-  ]
-};
-</script>
-
-<script src=viewer.js></script>
+<script src="../map.js"></script>
+<script src="../viewer.js"></script>
 
 <script>
 tile_w = 200;   // tiles width in px
@@ -98,17 +33,16 @@ map_w = map.w;  // map width in tiles
 map_h = map.h;  // map height in tiles
 
 // Hero (units are proportional to the map's cubes)
-hero_w = 1;     // hero width 
-hero_h = 1;     // hero height
-hero_d = 0.9;   // hero depth
-hero_x = 2;     // X position
-hero_y = 2;     // Y position
-hero_z = 5;     // Z position
-hero_rz = 0;    // Z angle
-hero_vz = 0;    // Z speed
-hero_az = 0;  // Z acceleration
-hero_grounded = 0; // hero is grounded
-hero_canjump = 1;  // hero can jump (or jump again after space key has been released)
+hero_w = .9;        // hero width 
+hero_h = .9;        // hero height
+hero_d = .9;        // hero depth
+hero_x = 2;         // X position
+hero_y = 2;         // Y position
+hero_z = 5;         // Z position
+hero_vz = 0;        // Z speed
+hero_az = 0;        // Z acceleration
+hero_grounded = 0;  // hero is grounded
+hero_canjump = 1;   // hero can jump (or jump again after space key has been released)
 
 tile1 = null;
 tile2 = null;
@@ -147,7 +81,7 @@ setInterval(() => {
   // The hero's bounding cuboid's corners have the following coordinates:
   //
   //
-  //          [hero_x, hero_y, hero_z + hero_d]      [hero_x + hero_w, hero_y, hero_z + hero_d]
+  //                [hero_x, hero_y, hero_z + hero_d]      [hero_x + hero_w, hero_y, hero_z + hero_d]
   //                                                ______
   //                                               /|    /|
   //  [hero_x, hero_y + hero_h, hero_z + hero_d]  /_____/  [hero_x + hero_w, hero_y + hero_h, hero_z + hero_d]
@@ -156,7 +90,7 @@ setInterval(() => {
   //                       [hero_x, hero_y, hero_z] |__|__| [hero_x + hero_w, hero_y, hero_z]
   //                                             | /   | /
   //                                             |/____|/
-  //              [hero_x, hero_y + hero_h, hero_z]      [hero_x + hero_w, hero_y + hero_h, hero_z]
+  //           [hero_x, hero_y + hero_h, hero_z]         [hero_x + hero_w, hero_y + hero_h, hero_z]
   //
   
   // Reset grounded state
@@ -169,13 +103,13 @@ setInterval(() => {
   
   // Get the value of the map cube at the bottom corners of the hero
   tile1 = getCubeValue(hero_x, hero_y, hero_z);
-  tile2 = getCubeValue(hero_x + hero_w, hero_y, hero_z);
-  tile3 = getCubeValue(hero_x, hero_y + hero_h, hero_z);
-  tile4 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z);
+  tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
+  tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
+  tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z);
   
   // If a tile is solid, put the hero on top of it (he's grounded)
   if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1 || hero_z < 0){
-    console.log("collision bottom");
+    //console.log("collision bottom");
     hero_z = Math.ceil(hero_z);
     hero_grounded = 1;
     hero_vz = 0;
@@ -189,9 +123,9 @@ setInterval(() => {
     
     // Get the value of the map cubes at the left corners of the hero
     tile1 = getCubeValue(hero_x, hero_y, hero_z);
-    tile2 = getCubeValue(hero_x, hero_y + hero_h, hero_z);
+    tile2 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
     tile3 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
-    tile4 = getCubeValue(hero_x, hero_y + hero_h, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
     
     // If a tile is solid, put the hero on the right side of it
     if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
@@ -205,16 +139,16 @@ setInterval(() => {
     hero_x += .1;
     if((hero_x + hero_w) >= map_w) hero_x = map_w - hero_w;
     
-    // Get the value of the map cubes at the left corners of the hero
+    // Get the value of the map cubes at the right corners of the hero
     tile1 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
-    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h -.1, hero_z);
     tile3 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
-    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
     
     // If a tile is solid, put the hero on the right side of it
     if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
       console.log("collision right");
-      hero_x = Math.floor(hero_x + hero_w) - hero_w;
+      hero_x = Math.floor(hero_x + hero_w - .1) - hero_w;
     }
   }
   
@@ -225,9 +159,9 @@ setInterval(() => {
     
     // Get the value of the map cubes at the back corners of the hero
     tile1 = getCubeValue(hero_x, hero_y, hero_z);
-    tile2 = getCubeValue(hero_x + hero_w, hero_y, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
     tile3 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
-    tile4 = getCubeValue(hero_x + hero_w, hero_y, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
     
     // If this tile is solid, put the hero on the right side of it
     if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
@@ -242,15 +176,15 @@ setInterval(() => {
     if((hero_y + hero_h) >= map_h) hero_y = map_h - hero_h;
   
     // Get the value of the map cubes at the front corners of the hero
-    tile1 = getCubeValue(hero_x, hero_y + hero_h, hero_z);
-    tile2 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z);
-    tile3 = getCubeValue(hero_x, hero_y + hero_h, hero_z + hero_d);
-    tile4 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z + hero_d);
+    tile1 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z);
+    tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
     
     // If a tile is solid, put the hero on the right side of it
     if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
       console.log("collision front");
-      hero_y = Math.floor(hero_y + hero_h) - hero_h;
+      hero_y = Math.floor(hero_y + hero_h - .1) - hero_h;
     }
   }
   
@@ -270,9 +204,9 @@ setInterval(() => {
   
     // Get the value of the tiles at the top corners of the hero
     tile1 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
-    tile2 = getCubeValue(hero_x + hero_w, hero_y, hero_z + hero_d);
-    tile3 = getCubeValue(hero_x, hero_y + hero_h, hero_z + hero_d);
-    tile4 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z + hero_d);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
+    tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
     
     // If a tile is solid, put the hero on the bottom side of it and make him fall
     if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
