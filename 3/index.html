@@ -1,4 +1,4 @@
-<h3>Mini 3D Platformer demo 2</h3>
+<h3>Mini 3D Platformer demo 3</h3>
 <link rel=stylesheet href="../viewer.css">
 <link rel=stylesheet href="../pieces.css">
 
@@ -14,14 +14,6 @@
     </div>
   </div>
 </div>
-
-<p>Camera:
-<!--button id=cf>Fixed</button>
-<button id=c3>3rd person</button>
-<button id=c1>1st person</button-->
-
-<p>rx <input type=range min=0 max=90 value=45 id=RX> 
-rz <input type=range min=-90 max=90 value=0 id=RZ>
 
 <script src="../map.js"></script>
 <script src="../viewer.js"></script>
@@ -39,13 +31,13 @@ hero_d = 0.9;       // hero depth
 hero_x = 2;         // X position
 hero_vx = 0;        // X speed
 hero_targetx = 0;   // X next position
-hero_y = 2;         // Y position
+hero_y = 7;         // Y position
 hero_vy = 0;        // Y speed
 hero_targety = 0;   // Y next position
 hero_z = 5;         // Z position
 hero_vz = 0;        // Z speed
 hero_az = 0;        // Z acceleration
-hero_rz = Math.PI/2;// Z angle in radians
+hero_rz = -Math.PI/2;// Z angle in radians
 hero_grounded = 0;  // hero is grounded
 hero_canjump = 1;   // hero can jump (or jump again after space key has been released)
 
@@ -263,6 +255,10 @@ setInterval(() => {
   // Move hero
   hero.style.transformOrigin = `${hero_x*200+100}px ${hero_y*200+100}px ${hero_z*200}px`;
   hero.style.transform = `scaleX(${hero_w})scaleY(${hero_h})rotateZ(${hero_rz - Math.PI/2}rad)translate3d(${hero_x*200}px,${hero_y*200}px,${hero_z*200}px)`;
+  
+  // Move camera
+  scene.style.transformOrigin = `${hero_x*200+100}px ${hero_y*200+100}px ${hero_z*200}px`;
+  scene.style.transform = `translate3d(${-hero_x*200}px,${-hero_y*200}px,${-hero_z*200}px)translateY(-1000px)rotateX(65deg)rotateZ(180deg)rotateZ(${-(hero_rz - Math.PI/2)}rad)translateZ(-1000px)`;
 
 }, 16);
 </script>

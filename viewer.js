@@ -44,4 +44,4 @@ drawScene = () => {
 drawScene();
 scene.style.width = floor.style.width = w * 200 + "px";
 scene.style.height = floor.style.height = h * 200 + "px";
-RX.onchange = RX.onupdate = RX.oninput = RZ.onchange = RZ.onupdate = RZ.oninput = () => { moveScene(rx = +RX.value, rz = +RZ.value) }
+if(top.RX) RX.onchange = RX.onupdate = RX.oninput = RZ.onchange = RZ.onupdate = RZ.oninput = () => { moveScene(rx = +RX.value, rz = +RZ.value) }
