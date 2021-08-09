@@ -38,8 +38,10 @@ hero_h = .7;        // hero height
 hero_d = 0.9;       // hero depth
 hero_x = 2;         // X position
 hero_vx = 0;        // X speed
+hero_targetx = 0;   // X next position
 hero_y = 2;         // Y position
 hero_vy = 0;        // Y speed
+hero_targety = 0;   // Y next position
 hero_z = 5;         // Z position
 hero_vz = 0;        // Z speed
 hero_az = 0;        // Z acceleration
@@ -155,9 +157,9 @@ setInterval(() => {
   if(hero_vx < 0 && hero_vy < 0){
     
     // Get the value of the map cubes at the top and left sides of the hero
-    tile1 = getCubeValue(hero_x, hero_y, hero_z); // top-left
-    tile2 = getCubeValue(hero_x + hero_w, hero_y, hero_z); // top
-    tile3 = getCubeValue(hero_x, hero_y + hero_h, hero_z); // left
+    tile1 = getCubeValue(hero_x + .1, hero_y + .1, hero_z); // top-left (inset)
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z); // top
+    tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z); // left
     
     // Stick to the solid cubes
     if(tile1 == 0 && tile3 == 0){
@@ -171,12 +173,12 @@ setInterval(() => {
   }
   
   // Top/Right
-  if(hero_vx >= 0 && hero_vy < 0){
+  if(hero_vx > 0 && hero_vy < 0){
     
     // Get the value of the map cubes at the top and right sides of the hero
-    tile1 = getCubeValue(hero_x + hero_w, hero_y, hero_z); // top-right
+    tile1 = getCubeValue(hero_x + hero_w - .2, hero_y + .1, hero_z); // top-right (inset)
     tile2 = getCubeValue(hero_x, hero_y, hero_z); // top
-    tile3 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z); // right
+    tile3 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z); // right
     
     // Stick to the solid cubes
     if(tile1 == 0 && tile3 == 0){
@@ -190,11 +192,11 @@ setInterval(() => {
   }
   
   // Bottom/Left
-  if(hero_vx < 0 && hero_vy >= 0){
+  if(hero_vx < 0 && hero_vy > 0){
     
     // Get the value of the map cubes at the bottom and left sides of the hero
-    tile1 = getCubeValue(hero_x, hero_y + hero_h, hero_z); // bottom-left
-    tile2 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z); // bottom
+    tile1 = getCubeValue(hero_x + .1, hero_y + hero_h - .1, hero_z); // bottom-left (inset)
+    tile2 = getCubeValue(hero_x + hero_w, hero_y + hero_h - .1, hero_z); // bottom
     tile3 = getCubeValue(hero_x, hero_y, hero_z); // left
     
     // Stick to the solid cubes
@@ -209,10 +211,10 @@ setInterval(() => {
   }
   
   // Bottom/Right
-  if(hero_vx >= 0 && hero_vy >= 0){
+  if(hero_vx > 0 && hero_vy > 0){
     
     // Get the value of the map cubes at the bottom and right sides of the hero
-    tile1 = getCubeValue(hero_x + hero_w, hero_y + hero_h, hero_z); // bottom-right
+    tile1 = getCubeValue(hero_x + hero_w - .2, hero_y + hero_h - .1, hero_z); // bottom-right (inset)
     tile2 = getCubeValue(hero_x, hero_y + hero_h, hero_z); // bottom
     tile3 = getCubeValue(hero_x + hero_w, hero_y, hero_z); // right
     
