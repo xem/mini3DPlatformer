@@ -1,0 +1,30 @@
+﻿/* Global */
+.piece{pointer-events:none;position:absolute;width:200px;height:200px}
+.face{width:200px;height:200px;position:fixed;font-size:100px;transform-origin:50% 100%;backface-visibility:hidden}
+
+/* piece rotation */
+.r1{transform:rotateZ(90deg)}
+.r2{transform:rotateZ(180deg)}
+.r3{transform:rotateZ(-90deg)}
+
+/* Cube */
+.up{transform:translateZ(200px)}
+.left{transform:translate3D(-100px,-100px,0)rotateZ(90deg)rotateX(-90deg)}
+.right{transform:translate3D(100px,-100px,0)rotateZ(-90deg)rotateX(-90deg)}
+.front{transform:rotateX(-90deg)}
+.back{transform:translate3D(0,-200px,0)rotateZ(180deg)rotateX(-90deg)}
+.down{transform:rotateX(180deg)}
+
+/* textures */
+.cube *{background:#bbb}
+.cube .front{background:#ddd}
+.cube .left, .cube .right{background:#999}
+
+#hero * {background:#fa0}
+#hero .front{background:#e92}
+#hero .left, #hero .right{background:#d70}
+#hero .front:before {display:block;width:200px;content:'👀';font-size:100px;text-align:center} 
+
+/* plane, sprite */
+.plane,.sprite{font-size:200px}
+.plane *,.sprite *{transform-origin:50% 100%;transform:translateY(-100px)rotateX(-90deg)}

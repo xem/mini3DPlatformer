@@ -1,0 +1,223 @@
+<h3>Mini 3D Platformer demo 1</h3>
+<link rel=stylesheet href="../viewer.css">
+<link rel=stylesheet href="../pieces.css">
+
+<p>Move with arrow keys or WASD or ZQSD, jump with Space
+<p><a href="https://github.com/xem/mini3DPlatformer/">Source code</a>
+<p>
+<div id=viewport>
+  <div id=camera>
+    <div id=scene>
+    
+      <div id=floor></div>
+    
+    </div>
+  </div>
+</div>
+
+<p>Camera:
+<!--button id=cf>Fixed</button>
+<button id=c3>3rd person</button>
+<button id=c1>1st person</button-->
+
+<p>rx <input type=range min=0 max=90 value=45 id=RX> 
+rz <input type=range min=-90 max=90 value=0 id=RZ>
+
+<script src="../map.js"></script>
+<script src="../viewer.js"></script>
+
+<script>
+tile_w = 200;   // tiles width in px
+tile_h = 200;   // tiles height in px
+map_w = map.w;  // map width in tiles
+map_h = map.h;  // map height in tiles
+
+// Hero (units are proportional to the map's cubes)
+hero_w = .9;        // hero width 
+hero_h = .9;        // hero height
+hero_d = .9;        // hero depth
+hero_x = 2;         // X position
+hero_y = 2;         // Y position
+hero_z = 5;         // Z position
+hero_vz = 0;        // Z speed
+hero_az = 0;        // Z acceleration
+hero_grounded = 0;  // hero is grounded
+hero_canjump = 1;   // hero can jump (or jump again after space key has been released)
+
+tile1 = null;
+tile2 = null;
+
+// World
+g = 0.001;    // gravity in tiles/frame²
+scroll_x = 0; // X scroll in tiles
+
+// Inputs (see https://xem.github.io/articles/jsgamesinputs.html)
+// (I added "s" for space)
+u=r=d=l=s=0;
+onkeydown=onkeyup=e=>this['s****lurd************************l**r************l*d***u**u'[e.which-32]]=e.type[5];
+
+// Draw hero
+scene.insertAdjacentHTML("beforeEnd", drawCube(hero_x, hero_y, hero_z, "hero"));
+
+// Get the value of a map's cube at given coordinates
+getCubeValue = (x, y, z) => {
+
+  // Layer doesn't exist: return non-solid cube value
+  if(!map.layers[Math.floor(z)]){
+    return 0;
+  }
+  
+  if(!map.layers[Math.floor(z)][Math.floor(y)]){
+    return 0;
+  }
+  
+  return map.layers[Math.floor(z)][Math.floor(y)][Math.floor(x)];
+}
+
+// Game loop (60 fps)
+setInterval(() => {
+  
+  // Compute hero position:
+  // The hero's bounding cuboid's corners have the following coordinates:
+  //
+  //
+  //                [hero_x, hero_y, hero_z + hero_d]      [hero_x + hero_w, hero_y, hero_z + hero_d]
+  //                                                ______
+  //                                               /|    /|
+  //  [hero_x, hero_y + hero_h, hero_z + hero_d]  /_____/  [hero_x + hero_w, hero_y + hero_h, hero_z + hero_d]
+  //                                             |  |  |  |
+  //                                             |  |  |  |
+  //                       [hero_x, hero_y, hero_z] |__|__| [hero_x + hero_w, hero_y, hero_z]
+  //                                             | /   | /
+  //                                             |/____|/
+  //           [hero_x, hero_y + hero_h, hero_z]         [hero_x + hero_w, hero_y + hero_h, hero_z]
+  //
+  
+  // Reset grounded state
+  hero_grounded = 0;
+  
+  // Apply gravity to Y acceleration, Y acceleration to Y speed and Y speed to Y position
+  hero_az -= g;
+  hero_vz += hero_az;
+  hero_z += hero_vz;
+  
+  // Get the value of the map cube at the bottom corners of the hero
+  tile1 = getCubeValue(hero_x, hero_y, hero_z);
+  tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
+  tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
+  tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z);
+  
+  // If a tile is solid, put the hero on top of it (he's grounded)
+  if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1 || hero_z < 0){
+    //console.log("collision bottom");
+    hero_z = Math.ceil(hero_z);
+    hero_grounded = 1;
+    hero_vz = 0;
+    hero_az = 0;
+  }
+  
+  // If left key is pressed, go left
+  if(l){
+    hero_x -= .1;
+    if(hero_x < 0) hero_x = 0;
+    
+    // Get the value of the map cubes at the left corners of the hero
+    tile1 = getCubeValue(hero_x, hero_y, hero_z);
+    tile2 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
+    tile3 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
+    
+    // If a tile is solid, put the hero on the right side of it
+    if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
+      console.log("collision left");
+      hero_x = Math.ceil(hero_x);
+    }
+  }
+  
+  // If right key is pressed, go right
+  else if(r){
+    hero_x += .1;
+    if((hero_x + hero_w) >= map_w) hero_x = map_w - hero_w;
+    
+    // Get the value of the map cubes at the right corners of the hero
+    tile1 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h -.1, hero_z);
+    tile3 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
+    
+    // If a tile is solid, put the hero on the right side of it
+    if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
+      console.log("collision right");
+      hero_x = Math.floor(hero_x + hero_w - .1) - hero_w;
+    }
+  }
+  
+  // If up key is pressed, go back
+  else if(u){
+    hero_y -= .1;
+    if(hero_y < 0) hero_y = 0;
+    
+    // Get the value of the map cubes at the back corners of the hero
+    tile1 = getCubeValue(hero_x, hero_y, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z);
+    tile3 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
+    
+    // If this tile is solid, put the hero on the right side of it
+    if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
+      console.log("collision back");
+      hero_y = Math.ceil(hero_y);
+    }
+  }
+  
+  // If down key is pressed, go front
+  else if(d){
+    hero_y += .1;
+    if((hero_y + hero_h) >= map_h) hero_y = map_h - hero_h;
+  
+    // Get the value of the map cubes at the front corners of the hero
+    tile1 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z);
+    tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
+    
+    // If a tile is solid, put the hero on the right side of it
+    if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
+      console.log("collision front");
+      hero_y = Math.floor(hero_y + hero_h - .1) - hero_h;
+    }
+  }
+  
+  // If space key is pressed and the hero is grounded, jump
+  if(s && hero_grounded && hero_canjump){
+    hero_vz = .3;
+    hero_canjump = 0;
+  }
+  
+  // If space key is released, allow hero to jump again next time he's grounded
+  if(!s){
+    hero_canjump = 1;
+  }
+  
+  // If moving up
+  if(hero_vz > 0){
+  
+    // Get the value of the tiles at the top corners of the hero
+    tile1 = getCubeValue(hero_x, hero_y, hero_z + hero_d);
+    tile2 = getCubeValue(hero_x + hero_w - .1, hero_y, hero_z + hero_d);
+    tile3 = getCubeValue(hero_x, hero_y + hero_h - .1, hero_z + hero_d);
+    tile4 = getCubeValue(hero_x + hero_w - .1, hero_y + hero_h - .1, hero_z + hero_d);
+    
+    // If a tile is solid, put the hero on the bottom side of it and make him fall
+    if(tile1 == 1 || tile2 == 1 || tile3 == 1 || tile4 == 1){
+      hero_z = Math.floor(hero_z);
+      hero_vz = 0;
+      hero_az = 0;
+    }
+  }
+  
+  // Move hero
+  hero.style.transform = `translate3d(${hero_x*200}px,${hero_y*200}px,${hero_z*200}px)`;
+
+}, 16);
+</script>
