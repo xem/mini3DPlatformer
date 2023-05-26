@@ -18,19 +18,23 @@ onkeydown=onkeyup=e=>keys['s****lurd************************l**r************l*d*
 // Hero
 hero = {
   x: -2,
-  y: 6,
+  y: 9.5,
   z: 5,
+  
   ry: -35,
+  
   vx: 0,
   vy: 0,
   vz: 0,
+  
   ax: 0,
   ay: 0,
   az: 0,
+  
   grounded: 1
 };
 
-G = 0.001;
+G = 0.04;
 
 cubes = [
   [2, 0, 1],
@@ -57,14 +61,14 @@ for(y = 0; y < 10; y++){
   }
 }
 
-collision = (o, debug) => {
+collision = o => {
   var
-  y1 = Math.floor(o.y +.3),
-  x1 = Math.floor(o.x-.3),
-  x2 = Math.floor(o.x+.3),
-  z1 = Math.floor(o.z+.3),
-  z2 = Math.floor(o.z-.3);
-  if(debug) console.log(y1, map[y1]);
+  y1 = Math.floor(o.y-.5),
+  x1 = Math.floor(o.x-.2),
+  x2 = Math.floor(o.x+.2),
+  z1 = Math.floor(o.z+.2),
+  z2 = Math.floor(o.z-.2);
+  if(o.y - .5 < 0) return 1;
   if(map[y1]?.[x1]?.[z1] == 1) return 1;
   if(map[y1]?.[x1]?.[z2] == 1) return 1;
   if(map[y1]?.[x2]?.[z1] == 1) return 1;
@@ -96,39 +100,41 @@ onload = () => {
   W.clearColor("8Af");
   W.plane({g:"camera",size:150,b:"3d2",z:-100,y:-80,ns:1});
   
-  setTimeout(()=>{
-  
   // Game loop
   setInterval(()=>{
   
-    var x, y, z, vy; // tmp
-  
+    // tmp
+    var x, y, z;
+    
     // Fall
-    //y = hero.y;
-    //hero.y = 0;
-    /*
-    hero.ay += G;
-    if(hero.vy > .001) hero.vy = .001; 
-    hero.vy += hero.ay;
-    hero.y -= hero.vy;
-    if(collision(hero) || hero.y < 0){
+    y = hero.y;
+    if(hero.vy < 0) hero.vy -= G;
+    
+    // Ascend (less gravity)
+    if(hero.vy >= 0) hero.vy -= G/30;
+    
+    if(hero.vy < -G) hero.vy = -G;
+    hero.y += hero.vy;
+    
+    
+    // Jump
+    if(hero.grounded && keys.s){
+      hero.vy += .05;
+    }
+    
+    hero.grounded = 0;
+    if(collision(hero)){
       hero.y = y;
       hero.grounded = 1;
-      
     }
-    else hero.grounded = 0;*/
-    //hero.y -= 0.05;
-    //if(collision(hero) || hero.y < 0){
-    //  hero.y = y;
-    //}
     
-  
+    
     // Go front / back
     if(keys.u || keys.d){
       z = hero.z;
       x = hero.x;
       hero.z += (-keys.u + keys.d) * Math.cos(hero.ry*Math.PI/180) / 40;
-      if(collision(hero),1){
+      if(collision(hero)){
         hero.z = z;
       }
       hero.x += (-keys.u + keys.d) * Math.sin(hero.ry*Math.PI/180) / 40;
@@ -143,11 +149,8 @@ onload = () => {
       W.move({n:"M", });
     }
 
-    W.move({n:"M", x:hero.x, z:hero.z, ry:hero.ry});
-    console.log(hero.y, hero.vy, hero.ay, hero.ry);
+    W.move({n:"M", x:hero.x, y: hero.y, z:hero.z, ry: hero.ry});
   });
-  
-  },200);
 
 }
 </script>
