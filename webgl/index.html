@@ -10,6 +10,7 @@
 // +X = right, +Z = near, +Y = up
 // -X = left, -Z = far, -Y = down
 // All items fit in a 1 unit cube
+// All angles are in degrees
 // Coordinates of an object are at its center, ex: mario will be standing on the origin at [0, 0.5, 0]
 
 // Keyboard inputs
@@ -22,6 +23,9 @@ hero = {
   z: 5,
   
   ry: -35,
+  rmodel: 0,
+  rmodeltarget: 0,
+  rcamera: 0,
   
   vx: 0,
   vy: 0,
@@ -34,7 +38,7 @@ hero = {
   grounded: 1
 };
 
-G = 0.04;
+G = 0.03;
 
 cubes = [
   [2, 0, 1],
@@ -95,7 +99,9 @@ onload = () => {
       }
     }
   }
-  W.mario({n:"M",size:1,x:hero.x,y:hero.y+.5,z:hero.z,rx:-90,ry:0,t:mario,s:1});
+  W.group({n:"M",size:1,x:hero.x,y:hero.y+.5,z:hero.z,rx:-90,ry:0,s:1});
+  W.group({n:"m",g:"M",size:1,x:0,y:0,z:0,rx:0,ry:0,s:1});
+  W.mario({n:"mm",g:"m",size:1,x:0,y:0,z:0,rx:0,ry:0,t:mario,s:1});
   W.camera({g:"M",z:.5,y:-3.5,rx:90});
   W.clearColor("8Af");
   W.plane({g:"camera",size:150,b:"3d2",z:-100,y:-80,ns:1});
@@ -105,9 +111,11 @@ onload = () => {
   
     // tmp
     var x, y, z;
+    x = hero.x;
+    y = hero.y;
+    z = hero.z;
     
     // Fall
-    y = hero.y;
     if(hero.vy < 0) hero.vy -= G;
     
     // Ascend (less gravity)
@@ -119,7 +127,7 @@ onload = () => {
     
     // Jump
     if(hero.grounded && keys.s){
-      hero.vy += .05;
+      hero.vy += .045;
     }
     
     hero.grounded = 0;
@@ -131,8 +139,6 @@ onload = () => {
     
     // Go front / back
     if(keys.u || keys.d){
-      z = hero.z;
-      x = hero.x;
       hero.z += (-keys.u + keys.d) * Math.cos(hero.ry*Math.PI/180) / 40;
       if(collision(hero)){
         hero.z = z;
@@ -141,14 +147,56 @@ onload = () => {
       if(collision(hero)){
         hero.x = x;
       }
+      if(keys.u) hero.rmodeltarget = 0;
+      if(keys.d) hero.rmodeltarget = 180;
     }
     
-    // Turn left / right
+    // Go left / right
     if(keys.r || keys.l){
-      hero.ry += (-keys.r + keys.l)/2;
-      W.move({n:"M", });
+      hero.z += (-keys.l + keys.r) * Math.cos((hero.ry + 90)*Math.PI/180) / 40;
+      if(collision(hero)){
+        hero.z = z;
+      }
+      hero.x += (-keys.l + keys.r) * Math.sin((hero.ry + 90)*Math.PI/180) / 40;
+      if(collision(hero)){
+        hero.x = x;
+      }
+      // Rotate hero's model
+      if(keys.r) hero.rmodeltarget = 270;
+      if(keys.l) hero.rmodeltarget = 90
     }
+    
+    hero.rmodel = (hero.rmodel + 360)%360;
+    hero.rcamera = (hero.rcamera + 360)%360;
+    if(hero.rmodel == hero.rmodeltarget) { /* ok */ }
+    else if(hero.rmodel <= 0 && hero.rmodeltarget == 270) { hero.rmodel-=5}
+    else if(hero.rmodel >= 270 && hero.rmodeltarget == 0) { hero.rmodel+=5}
+    else if((hero.rmodel < hero.rmodeltarget)){ hero.rmodel+=5; }
+    else if((hero.rmodel > hero.rmodeltarget)){ hero.rmodel-=5 }
+    W.move({n:"mm", rz: hero.rmodel});
+   
 
+    console.log(hero.rmodel, hero.rmodeltarget, hero.rcamera, hero.ry);
+    
+    // Adapt model group's angle (affects camera)
+    if(hero.rcamera > hero.rmodel){
+      hero.rcamera --;
+      hero.ry ++;
+      //hero.rmodel--;
+      //hero.rmodeltarget--;
+      //hero.ry++;
+      //console.log(hero.rmodel, hero.rmodeltarget, hero.ry);
+    }
+    /*else if(hero.rcamera < hero.rmodel){
+      hero.rcamera --;
+      hero.ry ++;
+      //hero.rmodel--;
+      //hero.rmodeltarget--;
+      //hero.ry++;
+    }*/
+    
+    // Move hero's group
+    W.move({n:"m", rz: hero.rcamera});
     W.move({n:"M", x:hero.x, y: hero.y, z:hero.z, ry: hero.ry});
   });
 
